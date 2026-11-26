@@ -1,12 +1,35 @@
 <?php
 
-try {
-    require __DIR__ . '/../public/index.php';
-} catch (\Throwable $e) {
-    http_response_code(500);
-    echo "<pre>";
-    echo "ERROR: " . $e->getMessage() . "\n";
-    echo "FILE: " . $e->getFile() . ":" . $e->getLine() . "\n\n";
-    echo $e->getTraceAsString();
-    echo "</pre>";
+// Siapkan direktori sementara yang writable di Vercel (/tmp)
+$tmpDirs = [
+    '/tmp/storage/app/public',
+    '/tmp/storage/framework/cache/data',
+    '/tmp/storage/framework/sessions',
+    '/tmp/storage/framework/testing',
+    '/tmp/storage/framework/views',
+    '/tmp/storage/logs',
+    '/tmp/bootstrap/cache',
+];
+
+foreach ($tmpDirs as $dir) {
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
+    }
 }
+
+// Arahkan path bootstrap cache Laravel ke /tmp sebelum aplikasi dijalankan
+$_ENV['APP_SERVICES_CACHE'] = '/tmp/bootstrap/cache/services.php';
+$_ENV['APP_PACKAGES_CACHE'] = '/tmp/bootstrap/cache/packages.php';
+$_ENV['APP_CONFIG_CACHE']   = '/tmp/bootstrap/cache/config.php';
+$_ENV['APP_ROUTES_CACHE']   = '/tmp/bootstrap/cache/routes-v7.php';
+$_ENV['APP_EVENTS_CACHE']   = '/tmp/bootstrap/cache/events.php';
+$_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
+
+putenv('APP_SERVICES_CACHE=/tmp/bootstrap/cache/services.php');
+putenv('APP_PACKAGES_CACHE=/tmp/bootstrap/cache/packages.php');
+putenv('APP_CONFIG_CACHE=/tmp/bootstrap/cache/config.php');
+putenv('APP_ROUTES_CACHE=/tmp/bootstrap/cache/routes-v7.php');
+putenv('APP_EVENTS_CACHE=/tmp/bootstrap/cache/events.php');
+putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
+
+require __DIR__ . '/../public/index.php';
