@@ -5,10 +5,8 @@ use Pdo\Mysql;
 
 return [
 
-   
     'default' => env('DB_CONNECTION', 'sqlite'),
 
-    
     'connections' => [
 
         'sqlite' => [
@@ -39,7 +37,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA') ?: base_path('certs/isrgrootx1.pem'),
             ]) : [],
         ],
 
@@ -95,13 +93,10 @@ return [
 
     ],
 
-    
     'migrations' => [
         'table' => 'migrations',
         'update_date_on_publish' => true,
     ],
-
-    
 
     'redis' => [
 
